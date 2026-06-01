@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 
 export interface CaptureSource {
   id: string;
@@ -24,6 +25,7 @@ export interface RecorderState {
   fps: number;
   recordAudio: boolean;
   recordMicrophone: boolean;
+  outputDir: string;
   outputPath: string | null;
   duration: number;
   error: string | null;
@@ -36,6 +38,7 @@ const DEFAULT_STATE: RecorderState = {
   fps: 30,
   recordAudio: true,
   recordMicrophone: true,
+  outputDir: "",
   outputPath: null,
   duration: 0,
   error: null,
@@ -46,13 +49,26 @@ const DEFAULT_STATE: RecorderState = {
 const [state, setState] = createSignal<RecorderState>({ ...DEFAULT_STATE });
 let timerInterval: ReturnType<typeof setInterval> | null = null;
 
+// Listen for stop event from overlay window
+listen("recording-stopped", () => {
+  stopTimer();
+  setState((prev) => ({ ...prev, status: "idle" }));
+});
+
+// Listen for recording-saved event from backend
+listen<string>("recording-saved", (event) => {
+  setState((prev) => ({ ...prev, outputPath: event.payload }));
+});
+
 async function loadSources() {
   try {
     const sources = await invoke<CaptureSource[]>("get_capture_sources");
+    const outputDir = (await getDefaultOutputDir()) || "C:\\Users\\Public\\Videos\\Tapeit";
     setState((prev) => ({
       ...prev,
       sources,
       selectedSourceId: sources.length > 0 ? sources[0].id : null,
+      outputDir,
       error: null,
     }));
   } catch (err) {
@@ -78,6 +94,10 @@ function setRecordMicrophone(value: boolean) {
   setState((prev) => ({ ...prev, recordMicrophone: value }));
 }
 
+function setOutputDir(dir: string) {
+  setState((prev) => ({ ...prev, outputDir: dir }));
+}
+
 function startTimer() {
   setState((prev) => ({ ...prev, duration: 0 }));
   timerInterval = setInterval(() => {
@@ -101,13 +121,11 @@ async function startRecording() {
 
   try {
     setState((prev) => ({ ...prev, error: null }));
-    const outputDir =
-      (await getDefaultOutputDir()) || "C:\\Users\\Public\\Videos\\Tapeit";
 
     const config: RecordingConfig = {
       source_id: current.selectedSourceId,
       fps: current.fps,
-      output_dir: outputDir,
+      output_dir: current.outputDir,
       record_audio: current.recordAudio,
       record_microphone: current.recordMicrophone,
     };
@@ -195,6 +213,7 @@ export function useRecorderStore() {
     setFps,
     setRecordAudio,
     setRecordMicrophone,
+    setOutputDir,
     startRecording,
     stopRecording,
     pauseRecording,

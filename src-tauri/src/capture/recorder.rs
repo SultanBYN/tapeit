@@ -9,6 +9,7 @@ use scap::{
 };
 use serde::{Deserialize, Serialize};
 use std::sync::mpsc;
+use tauri::{AppHandle, Emitter};
 
 use crate::audio::{AudioData, AudioHandle, start_audio_capture};
 use crate::encoder::{StreamingEncoder, VideoEncoder};
@@ -21,6 +22,10 @@ unsafe impl Send for SendOptions {}
 impl SendOptions {
     fn into_inner(self) -> Options { self.0 }
 }
+
+/// Wrapper to send AppHandle across threads (it's Send but we need to be explicit).
+struct SendAppHandle(AppHandle);
+unsafe impl Send for SendAppHandle {}
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum RecordingState {
@@ -66,6 +71,7 @@ impl ScreenRecorder {
         fps: u32,
         record_mic: bool,
         record_system_audio: bool,
+        app_handle: AppHandle,
     ) -> Result<(), String> {
         let current_state = self.state();
         if current_state != RecordingState::Idle {
@@ -101,6 +107,7 @@ impl ScreenRecorder {
         let state = Arc::clone(&self.state);
         let is_paused = Arc::clone(&self.is_paused);
         let last_error = Arc::clone(&self.last_error);
+        let send_app = SendAppHandle(app_handle);
 
         // Set state to recording
         *state.lock().unwrap() = RecordingState::Recording;
@@ -121,6 +128,8 @@ impl ScreenRecorder {
         std::thread::Builder::new()
             .name("tapeit-capture".into())
             .spawn(move || {
+                let app_handle = send_app.0;
+
                 // Helper to set error and reset state
                 let set_error = |msg: String| {
                     log::error!("{}", msg);
@@ -250,6 +259,10 @@ impl ScreenRecorder {
                 } else {
                     log::info!("Recording saved to {:?}", output_path);
                 }
+
+                // Emit event to frontend with saved file path
+                let path_str = output_path.to_string_lossy().to_string();
+                let _ = app_handle.emit("recording-saved", path_str);
 
                 *state.lock().unwrap() = RecordingState::Idle;
             })

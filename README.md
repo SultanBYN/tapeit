@@ -80,16 +80,26 @@ tapeit/
 | Encoding | FFmpeg | Hardware-accelerated H.264 encoding |
 | Frontend | SolidJS | Tiny bundle, fine-grained reactivity |
 
+## Features
+
+- Screen capture (displays + windows) via native APIs
+- Mic + system audio capture with AAC encoding
+- Adjustable FPS (15 / 24 / 30 / 60)
+- Pause / resume recording
+- Floating overlay window (timer + controls, draggable, always-on-top)
+- Auto minimize/restore main window during recording
+- MP4 output with timestamp naming (`tapeit_YYYYMMDD_HHMMSS.mp4`)
+
 ## Keyboard Shortcuts
 
 | Shortcut | Action |
 |----------|--------|
-| `Ctrl+Shift+R` | Toggle recording |
-| `Ctrl+Shift+S` | Take screenshot |
+| `Ctrl+Shift+R` | Toggle recording (not yet wired) |
+| `Ctrl+Shift+S` | Take screenshot (not yet implemented) |
 
 ## Roadmap
 
-- [x] Phase 1: Screen capture + local save
+- [x] Phase 1: Screen capture + local save + audio
 - [ ] Phase 2: Webcam overlay + annotations
 - [ ] Phase 3: Cloud upload + shareable links
 - [ ] Phase 4: Team workspaces + comments

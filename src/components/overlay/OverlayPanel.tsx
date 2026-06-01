@@ -1,13 +1,13 @@
 import { Component, Show, createSignal, onCleanup, onMount } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
+import { emit } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
 export const OverlayPanel: Component = () => {
   const [seconds, setSeconds] = createSignal(0);
   const [isPaused, setIsPaused] = createSignal(false);
+  const [isStopping, setIsStopping] = createSignal(false);
   let timerInterval: ReturnType<typeof setInterval> | null = null;
-  let dragStartX = 0;
-  let dragStartY = 0;
 
   onMount(() => {
     startTimer();
@@ -52,10 +52,25 @@ export const OverlayPanel: Component = () => {
   }
 
   async function handleStop() {
+    if (isStopping()) return;
+    setIsStopping(true);
     stopTimer();
-    await invoke("stop_recording");
-    await invoke("hide_overlay");
-    await invoke("restore_main");
+
+    try {
+      await invoke("stop_recording");
+      // Notify main window so it resets its store state
+      await emit("recording-stopped");
+      await invoke("hide_overlay");
+      await invoke("restore_main");
+    } catch (err) {
+      console.error("Stop recording failed:", err);
+      // Still try to clean up UI even if stop_recording failed
+      try {
+        await emit("recording-stopped");
+        await invoke("hide_overlay");
+        await invoke("restore_main");
+      } catch { /* best effort */ }
+    }
   }
 
   async function handleDragStart(e: MouseEvent) {
@@ -80,6 +95,7 @@ export const OverlayPanel: Component = () => {
           class="overlay-btn overlay-btn-pause"
           onClick={handlePauseResume}
           title={isPaused() ? "Resume" : "Pause"}
+          disabled={isStopping()}
         >
           <Show when={isPaused()} fallback={<PauseIcon />}>
             <PlayIcon />
@@ -90,6 +106,7 @@ export const OverlayPanel: Component = () => {
           class="overlay-btn overlay-btn-stop"
           onClick={handleStop}
           title="Stop Recording"
+          disabled={isStopping()}
         >
           <StopIcon />
         </button>

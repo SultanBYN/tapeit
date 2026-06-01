@@ -100,6 +100,52 @@
   letter-spacing: 2px;
 }
 
+/* Output Directory Picker */
+.output-card .output-path-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-radius: var(--radius);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  text-align: left;
+}
+
+.output-card .output-path-btn:hover {
+  border-color: var(--text-muted);
+}
+
+.output-path-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  margin-right: 8px;
+}
+
+.output-path-icon {
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+/* Saved Banner */
+.saved-banner {
+  padding: 8px 12px;
+  background: rgba(77, 255, 130, 0.12);
+  border: 1px solid rgba(77, 255, 130, 0.4);
+  border-radius: var(--radius);
+  color: #4dff82;
+  font-size: 12px;
+  text-align: center;
+  word-break: break-all;
+}
+
 /* Error Banner */
 .error-banner {
   padding: 8px 12px;

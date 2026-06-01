@@ -191,25 +191,26 @@ cargo tauri build        # Production build
 
 ## Current State & Known Limitations
 
-### Phase 1 - In Progress
+### Phase 1 - Complete
 - [x] Screen capture from displays and windows
 - [x] Local file saving with timestamp naming (`tapeit_YYYYMMDD_HHMMSS.mp4`)
-- [x] Global keyboard shortcuts
 - [x] Adjustable FPS, pause/resume
 - [x] Floating overlay window (timer + controls, draggable)
 - [x] Main window minimize/restore on record start/stop
-- [ ] Audio capture integration (AudioCapturer exists but not wired into pipeline)
-- [ ] Audio muxing into MP4 output
+- [x] Audio capture integration (mic + system audio via cpal, respects pause state)
+- [x] Audio muxing into MP4 output (FFmpeg AAC 128k, with video-only fallback)
+- [ ] Global keyboard shortcuts (plugin loaded but listeners not wired up)
+- [ ] Screenshot shortcut (registered but not implemented)
 
-### MVP Limitations
+### Current Limitations
 - Encoding uses **FFmpeg CLI wrapper** (not zero-copy FFI bindings)
 - No GPU-accelerated encoding yet (software libx264 only)
-- Audio capture exists but is **not muxed** into final MP4
-- Screenshot shortcut registered but not implemented
+- Global shortcuts plugin is loaded but no key listeners are actually registered
+- Screenshot shortcut registered in config but handler not implemented
 
 ## Roadmap
 
-- [ ] Phase 1: Screen capture + local save + audio (in progress)
+- [x] Phase 1: Screen capture + local save + audio
 - [ ] Phase 2: Webcam overlay + annotations
 - [ ] Phase 3: Cloud upload + shareable links
 - [ ] Phase 4: Team workspaces + comments

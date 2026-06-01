@@ -27,6 +27,7 @@ pub fn get_capture_sources() -> Vec<CaptureSource> {
 pub fn start_recording(
     config: RecordingConfig,
     state: State<'_, RecorderState>,
+    app: tauri::AppHandle,
 ) -> Result<String, String> {
     let mut recorder = state.0.lock().map_err(|e| e.to_string())?;
 
@@ -51,6 +52,7 @@ pub fn start_recording(
         config.fps,
         config.record_microphone,
         config.record_audio,
+        app,
     )?;
 
     Ok(output_path.to_string_lossy().to_string())
