@@ -56,6 +56,11 @@ export const RecorderPanel: Component = () => {
         <Timer seconds={store.state().duration} />
       </Show>
 
+      {/* Error display */}
+      <Show when={store.state().error}>
+        <div class="error-banner">{store.state().error}</div>
+      </Show>
+
       {/* Controls */}
       <div class="controls">
         <Show when={isIdle()}>

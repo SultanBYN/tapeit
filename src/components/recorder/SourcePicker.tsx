@@ -27,7 +27,7 @@ export const SourcePicker: Component<SourcePickerProps> = (props) => {
           {(source) => (
             <option value={source.id}>
               {source.source_type === "Screen" ? "🖥" : "🪟"}{" "}
-              {source.name} ({source.width}x{source.height})
+              {source.name}
             </option>
           )}
         </For>

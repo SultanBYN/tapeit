@@ -11,16 +11,9 @@ pub struct CaptureSource {
     pub id: String,
     pub name: String,
     pub source_type: SourceType,
-    pub width: u32,
-    pub height: u32,
 }
 
 /// Returns all available capture sources (screens + windows) using the `scap` crate.
-///
-/// Uses platform-specific APIs under the hood:
-/// - Windows: Windows Graphics Capture API
-/// - macOS: ScreenCaptureKit
-/// - Linux: PipeWire / X11
 pub fn get_available_sources() -> Vec<CaptureSource> {
     let mut sources = Vec::new();
 
@@ -31,7 +24,6 @@ pub fn get_available_sources() -> Vec<CaptureSource> {
         return sources;
     }
 
-    // Get available capture targets
     let targets = scap::get_all_targets();
 
     for target in targets {
@@ -39,10 +31,8 @@ pub fn get_available_sources() -> Vec<CaptureSource> {
             scap::Target::Display(display) => {
                 sources.push(CaptureSource {
                     id: format!("display-{}", display.id),
-                    name: format!("Display {}", display.id),
+                    name: display.title,
                     source_type: SourceType::Screen,
-                    width: display.width,
-                    height: display.height,
                 });
             }
             scap::Target::Window(window) => {
@@ -50,8 +40,6 @@ pub fn get_available_sources() -> Vec<CaptureSource> {
                     id: format!("window-{}", window.id),
                     name: window.title,
                     source_type: SourceType::Window,
-                    width: window.width,
-                    height: window.height,
                 });
             }
         }

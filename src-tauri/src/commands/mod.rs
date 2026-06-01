@@ -45,7 +45,13 @@ pub fn start_recording(
         })
         .ok_or("Capture source not found")?;
 
-    recorder.start(target, output_path.clone(), config.fps)?;
+    recorder.start(
+        target,
+        output_path.clone(),
+        config.fps,
+        config.record_microphone,
+        config.record_audio,
+    )?;
 
     Ok(output_path.to_string_lossy().to_string())
 }
@@ -73,4 +79,10 @@ pub fn get_recording_state(state: State<'_, RecorderState>) -> String {
     let recorder = state.0.lock().unwrap();
     let state = recorder.state();
     serde_json::to_string(&state).unwrap_or_else(|_| "\"Idle\"".to_string())
+}
+
+#[tauri::command]
+pub fn get_last_error(state: State<'_, RecorderState>) -> Option<String> {
+    let recorder = state.0.lock().unwrap();
+    recorder.take_error()
 }

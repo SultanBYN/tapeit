@@ -40,9 +40,6 @@
   "plugins": {
     "shell": {
       "open": true
-    },
-    "global-shortcut": {
-      "shortcuts": ["CmdOrCtrl+Shift+R", "CmdOrCtrl+Shift+S"]
     }
   }
 }

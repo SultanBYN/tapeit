@@ -1,3 +1,3 @@
 mod capture;
 
-pub use capture::AudioCapturer;
+pub use capture::{AudioData, AudioHandle, start_audio_capture};

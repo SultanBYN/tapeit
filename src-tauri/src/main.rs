@@ -9,8 +9,8 @@ mod utils;
 
 use capture::ScreenRecorder;
 use commands::{
-    get_capture_sources, get_recording_state, pause_recording, resume_recording, start_recording,
-    stop_recording, RecorderState,
+    get_capture_sources, get_last_error, get_recording_state, pause_recording, resume_recording,
+    start_recording, stop_recording, RecorderState,
 };
 use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
 
@@ -87,6 +87,7 @@ fn main() {
             pause_recording,
             resume_recording,
             get_recording_state,
+            get_last_error,
             get_capture_sources,
             show_overlay,
             hide_overlay,

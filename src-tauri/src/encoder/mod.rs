@@ -1,3 +1,3 @@
 mod video;
 
-pub use video::VideoEncoder;
+pub use video::{StreamingEncoder, VideoEncoder};

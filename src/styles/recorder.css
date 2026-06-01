@@ -100,6 +100,17 @@
   letter-spacing: 2px;
 }
 
+/* Error Banner */
+.error-banner {
+  padding: 8px 12px;
+  background: rgba(255, 77, 77, 0.15);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  color: var(--accent);
+  font-size: 12px;
+  text-align: center;
+}
+
 /* Controls */
 .controls {
   display: flex;
